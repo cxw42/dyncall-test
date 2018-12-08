@@ -1,0 +1,64 @@
+# Editor
+*.bak
+*~
+~*
+*.swp
+*.tmp
+
+# Binaries
+*.exe
+*.o
+*.obj
+*.a
+*.stackdump
+core
+
+/future
+
+# Testing files
+.prove
+.onlysome.yml
+
+# Auto-extracted or generated files
+/Makefile
+/ngbasm.py
+*.geninc
+*.old
+
+# VM bytecode files
+*.ngb
+
+# Support files
+*.xlsx
+*.xls
+*.svg
+*.txt
+*.csv
+
+#... Except that this one is part of the input to mtok.
+!mtok/mtok.csv
+
+# from GitHub's perl .gitignore:
+!Build/
+.last_cover_stats
+*.pm.tdy
+*.bs
+/MYMETA.*
+
+# Devel::Cover
+cover_db/
+
+# Devel::NYTProf
+nytprof.out
+
+# ExtUtils::MakeMaker
+/blib/
+/_eumm/
+/*.gz
+/MANIFEST.bak
+/pm_to_blib
+
+# Miscellaneous
+/tags
+*.dummy
+

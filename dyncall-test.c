@@ -13,14 +13,20 @@
 #include <dyncall.h>
 #include <dyncall_callback.h>
 
+typedef int (*printf_ptr)(
+   const char *format,
+   ...
+);
+
 int main(void) {
     DCCallVM *vm;
     void *native_result = (void *)0xcafebabe;
+    int native_int;
 
     DLLib *pLib = (void *)0x31337;
     void *msvcrt_printf = (void *)42;
 
-    char msg[]="Hello, world!\n";
+    char msg[]=">> Hello, world!\n";
 
     /* Create and set up call VM. */
     vm = dcNewCallVM(8192);
@@ -50,20 +56,46 @@ int main(void) {
         return 1;
     }
 
+    printf("About to dcFree\n");
+    dcFree(vm);
+    printf("after dcFree\n");
+
+    vm = dcNewCallVM(8192);
+    //dcMode(vm, DC_CALL_C_X64_WIN64);  // No output with this in Cygwin
+    //dcMode(vm, DC_CALL_C_X86_WIN32_STD);  //ditto
+    //dcMode(vm, DC_CALL_C_ELLIPSIS); //Ditto
+    //dcMode(vm, DC_CALL_C_ELLIPSIS_VARARGS); //Ditto
+    //dcMode(vm, DC_CALL_C_X86_CDECL);    //ditto
+    //dcMode(vm, DC_CALL_C_X86_WIN32_FAST_MS); //ditto
+    //dcMode(vm, DC_CALL_C_X86_WIN32_FAST_GNU); //ditto
+    //dcMode(vm, DC_CALL_C_X86_WIN32_THIS_MS);  //ditto
+    //dcMode(vm, DC_CALL_C_X86_WIN32_FAST_GNU); //ditto
+    //dcMode(vm, DC_CALL_SYS_DEFAULT);    //ditto
+
+    // OF INTEREST: with no dcMode() call, both the dcCall dynamic and the
+    // direct-call dynamic produce no output.  However, when run under cmd,
+    // both produce the desired output!
     dcReset(vm);
 
     dcArgPointer(vm, msg);
 
-    printf("About to dcCall dynamic symbol\n");
+    printf("\nAbout to dcCall dynamic symbol\n");
     native_result = (void *)0xdeadbeef;
         // so we know if it doesn't get assigned
     native_result = dcCallPointer(vm, msvcrt_printf);
     printf("After dcCall; result %p\n", native_result);
 
-
     printf("About to dcFree\n");
     dcFree(vm);
     printf("after dcFree\n");
 
+    printf("\nAbout to directly call dynamic symbol\n");
+    native_result = (void *)0xdeadbee;
+        // so we know if it doesn't get assigned
+    native_int = (*((printf_ptr)msvcrt_printf))(msg);
+    printf("After direct call; result %x\n", native_int);
+
+
     return 0;
 }
+// vi: set fo-=ro:
